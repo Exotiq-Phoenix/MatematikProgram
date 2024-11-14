@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="da">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Avanceret Matematik Øvelser</title>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            color: #333;
+            overflow: hidden;
+        }
+
+        .container {
+            background-color: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 600px;
+            text-align: center;
+            opacity: 0;
+            animation: fadeIn 1s forwards;
+        }
+
+        h1 {
+            color: #4CAF50;
+            font-size: 36px;
+            margin-bottom: 20px;
+        }
+
+        #level-info {
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .question-box {
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            padding: 20px;
+            font-size: 20px;
+            margin: 20px 0;
+        }
+
+        input {
+            width: 60%;
+            padding: 10px;
+            font-size: 18px;
+            margin-top: 20px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input:focus {
+            border-color: #4CAF50;
+            outline: none;
+        }
+
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 12px 20px;
+            font-size: 18px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        #feedback {
+            margin-top: 20px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .correct {
+            color: #4CAF50;
+        }
+
+        .incorrect {
+            color: #f44336;
+        }
+
+        #score {
+            font-size: 20px;
+            margin-top: 20px;
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .btn-container button {
+            width: 48%;
+        }
+
+        .loading-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+        }
+
+        .loading-text {
+            font-size: 24px;
+            color: #4CAF50;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+            }
+
+            input {
+                width: 80%;
+            }
+
+            button {
+                font-size: 16px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container" id="main-container" style="display: none;">
+        <h1>Matematik Øvelser</h1>
+        
+        <div id="level-info">
+            <p>Aktuelt niveau: <span id="current-level"></span></p>
+            <p>Aktuelt klassetrin: <span id="current-grade"></span></p>
+        </div>
+        
+        <div class="question-box" id="exercise">
+            <h2>Opgave</h2>
+            <p id="question">Venter på opgave...</p>
+        </div>
+
+        <input type="text" id="answer" placeholder="Skriv dit svar her">
+        
+        <div id="feedback"></div>
+        
+        <div class="btn-container">
+            <button onclick="checkAnswer()">Tjek svar</button>
+            <button onclick="nextExercise()">Næste opgave</button>
+        </div>
+
+        <div id="score">
+            <p>Score: <span id="score-value"></span></p>
+        </div>
+    </div>
+
+    <script>
+        let currentLevel = localStorage.getItem('currentLevel') ? parseInt(localStorage.getItem('currentLevel')) : 1;
+        let score = localStorage.getItem('score') ? parseInt(localStorage.getItem('score')) : 0;
+        let correctAnswer;
+        let operation;
+
+        function updateUI() {
+            document.getElementById("current-level").innerText = currentLevel;
+            document.getElementById("current-grade").innerText = getGradeFromLevel(currentLevel);
+            document.getElementById("score-value").innerText = score;
+        }
+
+        function getGradeFromLevel(level) {
+            if (level <= 2) return 'Børnehave - 1. klasse';
+            if (level <= 4) return '2.-3. klasse';
+            if (level <= 6) return '4.-5. klasse';
+            if (level <= 8) return '6.-7. klasse';
+            return '8. klasse';
+        }
+
+        function nextExercise() {
+            // Skab og vis loading screen
+            showLoadingScreen('Indlæser næste opgave...');
+
+            // Vent lidt før næste opgave vises
+            setTimeout(() => {
+                // Fjern loading screen
+                removeLoadingScreen();
+                
+                // Clear question, feedback og input
+                document.getElementById("question").innerHTML = "Venter på opgave...";
+                clearAnswerInput();
+                clearFeedback();
+
+                // Vis de andre UI-elementer
+                document.getElementById("main-container").style.display = "block";
+
+                generateMathExercise(); // Generer ny opgave
+            }, 1000); // Indlæsningstid
+        }
+
+        function clearAnswerInput() {
+            document.getElementById("answer").value = ""; // Ryd inputfeltet
+        }
+
+        function clearFeedback() {
+            document.getElementById("feedback").innerHTML = ""; // Ryd feedback
+        }
+
+        function getRandomExerciseType() {
+            const types = ['addition', 'subtraction', 'multiplication', 'division'];
+            return types[Math.floor(Math.random() * types.length)];
+        }
+
+        function generateMathExercise() {
+            let num1, num2;
+            const exerciseType = getRandomExerciseType();
+
+            if (currentLevel <= 2) {
+                // 1.-2. klasse: Addition og subtraktion
+                if (exerciseType === 'addition') {
+                    num1 = Math.floor(Math.random() * 10);
+                    num2 = Math.floor(Math.random() * 10);
+                    correctAnswer = num1 + num2;
+                    operation = '+';
+                } else if (exerciseType === 'subtraction') {
+                    num1 = Math.floor(Math.random() * 10) + 10;
+                    num2 = Math.floor(Math.random() * 10);
+                    correctAnswer = num1 - num2;
+                    operation = '-';
+                }
+            } else if (currentLevel <= 4) {
+                // 3.-4. klasse: Multiplikation og subtraktion
+                num1 = Math.floor(Math.random() * 10) + 5;
+                num2 = Math.floor(Math.random() * 10);
+                correctAnswer = num1 * num2;
+                operation = '×';
+            } else if (currentLevel <= 6) {
+                // 5.-6. klasse: Division og multiplikation
+                num1 = Math.floor(Math.random() * 100) + 20;
+                num2 = Math.floor(Math.random() * 10) + 1;
+                correctAnswer = num1 / num2;
+                operation = '÷';
+            } else if (currentLevel <= 8) {
+                // 7.-8. klasse: Ligninger
+                num1 = Math.floor(Math.random() * 10);
+                correctAnswer = Math.floor(Math.random() * 10);
+                document.getElementById("question").innerHTML = `Løs ligningen: x + ${num1} = ${correctAnswer}`;
+                return; // Skip normale opgaver for ligninger
+            }
+
+            document.getElementById("question").innerHTML = `${num1} ${operation} ${num2} = ?`;
+        }
+
+        function checkAnswer() {
+            let answer = parseFloat(document.getElementById("answer").value);
+
+            if (Math.abs(answer - correctAnswer) < 0.1) {
+                document.getElementById("feedback").innerHTML = "Korrekt!";
+                document.getElementById("feedback").classList.add("correct");
+                document.getElementById("feedback").classList.remove("incorrect");
+                score += 1;
+            } else {
+                document.getElementById("feedback").innerHTML = "Forkert. Prøv igen.";
+                document.getElementById("feedback").classList.add("incorrect");
+                document.getElementById("feedback").classList.remove("correct");
+            }
+
+            localStorage.setItem('score', score);
+        }
+
+        function showLoadingScreen(message) {
+            const loadingScreen = document.createElement('div');
+            loadingScreen.classList.add('loading-screen');
+            loadingScreen.innerHTML = `<div class="loading-text">${message}</div>`;
+            document.body.appendChild(loadingScreen);
+        }
+
+        function removeLoadingScreen() {
+            const loadingScreen = document.querySelector('.loading-screen');
+            if (loadingScreen) {
+                loadingScreen.style.opacity = 0;
+                setTimeout(() => {
+                    loadingScreen.remove();
+                }, 500);
+            }
+        }
+
+        window.onload = function () {
+            document.getElementById("main-container").style.display = "none"; // Skjul main-container først
+            updateUI();
+            nextExercise(); // Start første opgave
+        }
+    </script>
+
+</body>
+</html>
