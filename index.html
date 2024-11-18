@@ -257,16 +257,30 @@
                 }
             } else if (currentLevel <= 4) {
                 // 3.-4. klasse: Multiplikation og subtraktion
-                num1 = Math.floor(Math.random() * 10) + 5;
-                num2 = Math.floor(Math.random() * 10);
-                correctAnswer = num1 * num2;
-                operation = '×';
+                if (exerciseType === 'multiplication') {
+                    num1 = Math.floor(Math.random() * 10) + 5;
+                    num2 = Math.floor(Math.random() * 10);
+                    correctAnswer = num1 * num2;
+                    operation = '×';
+                } else if (exerciseType === 'subtraction') {
+                    num1 = Math.floor(Math.random() * 10) + 10;
+                    num2 = Math.floor(Math.random() * 10);
+                    correctAnswer = num1 - num2;
+                    operation = '-';
+                }
             } else if (currentLevel <= 6) {
                 // 5.-6. klasse: Division og multiplikation
-                num1 = Math.floor(Math.random() * 100) + 20;
-                num2 = Math.floor(Math.random() * 10) + 1;
-                correctAnswer = num1 / num2;
-                operation = '÷';
+                if (exerciseType === 'division') {
+                    num1 = Math.floor(Math.random() * 10) + 10;
+                    num2 = Math.floor(Math.random() * 10) + 1; // Avoid division by zero
+                    correctAnswer = num1 / num2;
+                    operation = '÷';
+                } else if (exerciseType === 'multiplication') {
+                    num1 = Math.floor(Math.random() * 10) + 5;
+                    num2 = Math.floor(Math.random() * 10);
+                    correctAnswer = num1 * num2;
+                    operation = '×';
+                }
             } else if (currentLevel <= 8) {
                 // 7.-8. klasse: Ligninger
                 num1 = Math.floor(Math.random() * 10);
