@@ -99,6 +99,7 @@ function generateMathExercise() {
         } else if (currentLevel <= 8) {
             num1 = Math.floor(Math.random() * 10);
             correctAnswer = Math.floor(Math.random() * 10);
+            operation = '+'; // Set the operation for the equation
             document.getElementById("question").innerHTML = `Løs ligningen: x ${operation} ${num1} = ${correctAnswer}`;
             return;
         }
@@ -112,6 +113,28 @@ function generateMathExercise() {
         console.error("Error generating exercise:", error);
         ShowErrorPopup(error);
     }
+}
+
+// Function to load the next exercise
+function nextExercise() {
+    // Skab og vis loading screen
+    showLoadingScreen('Indlæser næste opgave...');
+
+    // Vent lidt før næste opgave vises
+    setTimeout(() => {
+        // Fjern loading screen
+        removeLoadingScreen();
+        
+        // Clear question, feedback og input
+        document.getElementById("question").innerHTML = "Venter på opgave...";
+        clearAnswerInput();
+        clearFeedback();
+
+        // Vis de andre UI-elementer
+        document.getElementById("main-container").style.display = "block";
+
+        generateMathExercise(); // Generer ny opgave
+    }, 1000); // Indlæsningstid
 }
 
 // Error handling functions
