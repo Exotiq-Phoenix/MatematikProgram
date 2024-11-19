@@ -290,12 +290,39 @@
             if (num1 === undefined || num2 === undefined || correctAnswer === undefined || operation === '') {
                 console.error("Opgave blev ikke korrekt genereret.");
                 document.getElementById("question").innerHTML = "Der opstod en fejl under genereringen af opgaven. Prøv igen.";
+                alert("Der opstod en fejl under genereringen af opgaven. Prøv igen.");
+                ShowErrorPopup();
                 return;
             }
 
             document.getElementById("question").innerHTML = `${num1} ${operation} ${num2} = ?`;
         }
 
+        function ShowErrorPopup() {
+            const popup = document.createElement('div');
+            popup.style.position = 'fixed';
+            popup.style.left = '50%';
+            popup.style.top = '50%';
+            popup.style.transform = 'translate(-50%, -50%)';
+            popup.style.padding = '20px';
+            popup.style.backgroundColor = 'white';
+            popup.style.border = '1px solid black';
+            popup.style.zIndex = '1000';
+
+            const message = document.createElement('p');
+            message.innerText = 'Der opstod en fejl under genereringen af opgaven. Prøv igen.';
+            popup.appendChild(message);
+
+            const button = document.createElement('button');
+            button.innerText = 'Next Question';
+            button.onclick = function() {
+                document.body.removeChild(popup);
+                generateMathExercise();
+            };
+            popup.appendChild(button);
+
+            document.body.appendChild(popup);
+        }
 
         function checkAnswer() {
             let answer = parseFloat(document.getElementById("answer").value);
