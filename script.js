@@ -8,13 +8,13 @@ let operation;
 function updateUI() {
     document.getElementById("current-level").innerText = currentLevel;
     document.getElementById("current-grade").innerText = getGradeFromLevel(currentLevel);
-    document.getElementById("score").innerText = score;
+    document.getElementById("score-value").innerText = `Score: ${score}`;
 }
 
 function refreshUI() {
     document.getElementById("current-level").innerText = currentLevel;
     document.getElementById("current-grade").innerText = getGradeFromLevel(currentLevel);
-    document.getElementById("score").innerText = score;
+    document.getElementById("score-value").innerText = `Score: ${score}`;
 }
 
 // Helper functions
