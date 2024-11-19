@@ -234,7 +234,7 @@
         }
 
         function getRandomExerciseType() {
-            const types = undefined;
+            let types;
             if (currentLevel <= 2) {
                 types = ['addition', 'subtraction'];
                 return types[Math.floor(Math.random() * types.length)];
