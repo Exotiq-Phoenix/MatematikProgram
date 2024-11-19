@@ -239,8 +239,10 @@
         }
 
         function generateMathExercise() {
-            let num1, num2;
-            const exerciseType = getRandomExerciseType();
+            let num1 = 0, num2 = 0;
+            let exerciseType = getRandomExerciseType();
+            correctAnswer = undefined;
+            operation = '';
 
             if (currentLevel <= 2) {
                 // 1.-2. klasse: Addition og subtraktion
@@ -261,7 +263,7 @@
                     num1 = Math.floor(Math.random() * 10) + 5;
                     num2 = Math.floor(Math.random() * 10);
                     correctAnswer = num1 * num2;
-                    operation = '×';
+                    operation = '*';
                 } else if (exerciseType === 'subtraction') {
                     num1 = Math.floor(Math.random() * 10) + 10;
                     num2 = Math.floor(Math.random() * 10);
@@ -289,13 +291,17 @@
                 return; // Skip normale opgaver for ligninger
             }
 
-            document.getElementById("question").innerHTML = `${num1} ${operation} ${num2} = ?`;
+            if (correctAnswer !== undefined && operation !== '') {
+                document.getElementById("question").innerHTML = `${num1} ${operation} ${num2} = ?`;
+            } else {
+                document.getElementById("question").innerHTML = "Der opstod en fejl. Prøv igen.";
+            }
         }
 
         function checkAnswer() {
             let answer = parseFloat(document.getElementById("answer").value);
 
-            if (Math.abs(answer - correctAnswer) < 0.1) {
+            if (correctAnswer !== undefined && Math.abs(answer - correctAnswer) < 0.1) {
                 document.getElementById("feedback").innerHTML = "Korrekt!";
                 document.getElementById("feedback").classList.add("correct");
                 document.getElementById("feedback").classList.remove("incorrect");
