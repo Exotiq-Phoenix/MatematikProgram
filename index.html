@@ -234,8 +234,20 @@
         }
 
         function getRandomExerciseType() {
-            const types = ['addition', 'subtraction', 'multiplication', 'division'];
-            return types[Math.floor(Math.random() * types.length)];
+            const types = undefined;
+            if (currentLevel <= 2) {
+                types = ['addition', 'subtraction'];
+                return types[Math.floor(Math.random() * 2)];
+            } else if (currentLevel <= 4) {
+                types = ['addition', 'subtraction', 'multiplication'];
+                return types[Math.floor(Math.random() * 2) + 2];
+            } else if (currentLevel <= 6) {
+                types = ['addition', 'subtraction', 'multiplication', 'division'];
+                return types[Math.floor(Math.random() * 2) + 4];
+            } else if (currentLevel <= 8) {
+                types = ['addition', 'subtraction', 'multiplication', 'division'];
+                return types[Math.floor(Math.random() * 2) + 6];
+            }
         }
 
         function generateMathExercise() {
