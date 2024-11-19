@@ -241,11 +241,10 @@
         function generateMathExercise() {
             let num1 = 0, num2 = 0;
             let exerciseType = getRandomExerciseType();
-            correctAnswer = undefined;
+            correctAnswer = 0;
             operation = '';
 
             if (currentLevel <= 2) {
-                // 1.-2. klasse: Addition og subtraktion
                 if (exerciseType === 'addition') {
                     num1 = Math.floor(Math.random() * 10);
                     num2 = Math.floor(Math.random() * 10);
@@ -258,7 +257,6 @@
                     operation = '-';
                 }
             } else if (currentLevel <= 4) {
-                // 3.-4. klasse: Multiplikation og subtraktion
                 if (exerciseType === 'multiplication') {
                     num1 = Math.floor(Math.random() * 10) + 5;
                     num2 = Math.floor(Math.random() * 10);
@@ -271,37 +269,40 @@
                     operation = '-';
                 }
             } else if (currentLevel <= 6) {
-                // 5.-6. klasse: Division og multiplikation
                 if (exerciseType === 'division') {
                     num1 = Math.floor(Math.random() * 10) + 10;
-                    num2 = Math.floor(Math.random() * 10) + 1; // Avoid division by zero
+                    num2 = Math.floor(Math.random() * 10) + 1;
                     correctAnswer = num1 / num2;
                     operation = '÷';
                 } else if (exerciseType === 'multiplication') {
                     num1 = Math.floor(Math.random() * 10) + 5;
                     num2 = Math.floor(Math.random() * 10);
                     correctAnswer = num1 * num2;
-                    operation = '×';
+                    operation = '*';
                 }
             } else if (currentLevel <= 8) {
-                // 7.-8. klasse: Ligninger
                 num1 = Math.floor(Math.random() * 10);
                 correctAnswer = Math.floor(Math.random() * 10);
                 document.getElementById("question").innerHTML = `Løs ligningen: x + ${num1} = ${correctAnswer}`;
-                return; // Skip normale opgaver for ligninger
+                return;
             }
 
-            if (correctAnswer !== undefined && operation !== '') {
-                document.getElementById("question").innerHTML = `${num1} ${operation} ${num2} = ?`;
-            } else {
-                document.getElementById("question").innerHTML = "Der opstod en fejl. Prøv igen.";
+            if (num1 === undefined || num2 === undefined || correctAnswer === undefined || operation === '') {
+                console.error("Opgave blev ikke korrekt genereret.");
+                document.getElementById("question").innerHTML = "Der opstod en fejl under genereringen af opgaven. Prøv igen.";
+                return;
             }
+
+            document.getElementById("question").innerHTML = `${num1} ${operation} ${num2} = ?`;
         }
+
 
         function checkAnswer() {
             let answer = parseFloat(document.getElementById("answer").value);
 
-            if (correctAnswer !== undefined && Math.abs(answer - correctAnswer) < 0.1) {
+            console.log(`User answer: ${answer}, Correct answer: ${correctAnswer} (checkAnswer)`);
+
+            if (correctAnswer !== undefined && !isNaN(answer) && Math.abs(answer - correctAnswer) < 0.1) {
                 document.getElementById("feedback").innerHTML = "Korrekt!";
                 document.getElementById("feedback").classList.add("correct");
                 document.getElementById("feedback").classList.remove("incorrect");
