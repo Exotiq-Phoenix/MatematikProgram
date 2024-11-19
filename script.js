@@ -14,7 +14,7 @@ function updateUI() {
 function refreshUI() {
     document.getElementById("current-level").innerText = currentLevel;
     document.getElementById("current-grade").innerText = getGradeFromLevel(currentLevel);
-    document.getElementById("score-value").innerText = score;
+    document.getElementById("score").innerText = score;
 }
 
 // Helper functions
