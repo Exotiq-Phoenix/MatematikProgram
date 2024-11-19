@@ -8,7 +8,7 @@ let operation;
 function updateUI() {
     document.getElementById("current-level").innerText = currentLevel;
     document.getElementById("current-grade").innerText = getGradeFromLevel(currentLevel);
-    document.getElementById("score-value").innerText = score;
+    document.getElementById("score").innerText = score;
 }
 
 function refreshUI() {
@@ -169,6 +169,7 @@ function nextExercise() {
 
         generateMathExercise(); // Generer ny opgave
     }, 1000); // Indlæsningstid
+    refreshUI(); // Refresh UI after loading the next exercise
 }
 
 // Error handling functions
