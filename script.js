@@ -43,10 +43,10 @@ function getRandomExerciseType() {
         types = ['addition', 'subtraction', 'multiplication'];
         return types[Math.floor(Math.random() * types.length)];
     } else if (currentLevel <= 6) {
-        types = ['addition', 'subtraction', 'multiplication', 'division'];
+        types = ['addition', 'subtraction', 'multiplication', 'division', 'fraction'];
         return types[Math.floor(Math.random() * types.length)];
     } else if (currentLevel <= 8) {
-        types = ['addition', 'subtraction', 'multiplication', 'division'];
+        types = ['addition', 'subtraction', 'multiplication', 'division', 'fraction', 'fraction_operations'];
         return types[Math.floor(Math.random() * types.length)];
     }
     //return types[Math.floor(Math.random() * types.length)];
@@ -95,13 +95,47 @@ function generateMathExercise() {
                 num2 = Math.floor(Math.random() * 10);
                 correctAnswer = num1 * num2;
                 operation = '*';
+            } else if (exerciseType === 'fraction') {
+                num1 = Math.floor(Math.random() * 10) + 1;
+                num2 = Math.floor(Math.random() * 10) + 1;
+                correctAnswer = num1 / num2;
+                operation = 'fraction';
+                document.getElementById("question").innerHTML = `Hvad er ${num1}/${num2} som decimaltal?`;
+                return;
             }
         } else if (currentLevel <= 8) {
-            num1 = Math.floor(Math.random() * 10);
-            correctAnswer = Math.floor(Math.random() * 10);
-            operation = '+'; // Set the operation for the equation
-            document.getElementById("question").innerHTML = `Løs ligningen: x ${operation} ${num1} = ${correctAnswer}`;
-            return;
+            if (exerciseType === 'fraction_operations') {
+                num1 = Math.floor(Math.random() * 10) + 1;
+                num2 = Math.floor(Math.random() * 10) + 1;
+                let num3 = Math.floor(Math.random() * 10) + 1;
+                let num4 = Math.floor(Math.random() * 10) + 1;
+                let fraction1 = num1 / num2;
+                let fraction2 = num3 / num4;
+                let operations = ['+', '-', '*', '÷'];
+                operation = operations[Math.floor(Math.random() * operations.length)];
+                switch (operation) {
+                    case '+':
+                        correctAnswer = fraction1 + fraction2;
+                        break;
+                    case '-':
+                        correctAnswer = fraction1 - fraction2;
+                        break;
+                    case '*':
+                        correctAnswer = fraction1 * fraction2;
+                        break;
+                    case '÷':
+                        correctAnswer = fraction1 / fraction2;
+                        break;
+                }
+                document.getElementById("question").innerHTML = `Hvad er ${num1}/${num2} ${operation} ${num3}/${num4}?`;
+                return;
+            } else {
+                num1 = Math.floor(Math.random() * 10);
+                correctAnswer = Math.floor(Math.random() * 10);
+                operation = '+'; // Set the operation for the equation
+                document.getElementById("question").innerHTML = `Løs ligningen: x ${operation} ${num1} = ${correctAnswer}`;
+                return;
+            }
         }
 
         if (num1 === undefined || num2 === undefined || correctAnswer === undefined || operation === '') {
@@ -164,6 +198,35 @@ function ShowErrorPopup(error) {
     document.body.appendChild(popup);
 }
 
+// Function to generate explanation in Danish
+function generateExplanation(num1, num2, operation, correctAnswer) {
+    let explanation = '';
+    switch (operation) {
+        case '+':
+            explanation = `For at løse ${num1} + ${num2}, skal du lægge ${num1} og ${num2} sammen. Resultatet er ${correctAnswer}.`;
+            break;
+        case '-':
+            explanation = `For at løse ${num1} - ${num2}, skal du trække ${num2} fra ${num1}. Resultatet er ${correctAnswer}.`;
+            break;
+        case '*':
+            explanation = `For at løse ${num1} * ${num2}, skal du gange ${num1} med ${num2}. Resultatet er ${correctAnswer}.`;
+            break;
+        case '÷':
+            explanation = `For at løse ${num1} ÷ ${num2}, skal du dividere ${num1} med ${num2}. Resultatet er ${correctAnswer}.`;
+            break;
+        case 'fraction':
+            explanation = `For at omregne ${num1}/${num2} til decimaltal, skal du dividere ${num1} med ${num2}. Resultatet er ${correctAnswer}.`;
+            break;
+        default:
+            explanation = 'Der opstod en fejl under genereringen af forklaringen.';
+    }
+    return explanation;
+}
+
+function generateEquationExplanation(num1, correctAnswer) {
+    return `For at løse ligningen x + ${num1} = ${correctAnswer}, skal du trække ${num1} fra ${correctAnswer}. Resultatet er x = ${correctAnswer - num1}.`;
+}
+
 // Answer checking function
 function checkAnswer() {
     let answer = parseFloat(document.getElementById("answer").value);
@@ -176,7 +239,15 @@ function checkAnswer() {
         document.getElementById("feedback").classList.remove("incorrect");
         score += 1;
     } else {
-        document.getElementById("feedback").innerHTML = "Forkert. Prøv igen.";
+        let explanation;
+        if (operation === 'fraction' || operation === 'fraction_operations') {
+            explanation = generateExplanation(num1, num2, operation, correctAnswer);
+        } else if (currentLevel <= 8) {
+            explanation = generateEquationExplanation(num1, correctAnswer);
+        } else {
+            explanation = generateExplanation(num1, num2, operation, correctAnswer);
+        }
+        document.getElementById("feedback").innerHTML = `Forkert. Prøv igen.<br>${explanation}`;
         document.getElementById("feedback").classList.add("incorrect");
         document.getElementById("feedback").classList.remove("correct");
     }
